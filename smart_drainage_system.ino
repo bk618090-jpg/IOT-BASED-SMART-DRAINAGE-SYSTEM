@@ -11,9 +11,11 @@ SoftwareSerial gsm(2, 3); // RX, TX
 const int waterSensor = A0;
 const int relayPin = 4;
 const int buzzer = 5;
+const char* alertPhone = "+91XXXXXXXXXX"; // Replace with phone number
 
 int waterValue = 0;
-int threshold = 300;
+int threshold = 300; // Analog sensor threshold for high-water/blockage detection
+bool alertSent = false;
 
 void setup()
 {
@@ -52,7 +54,11 @@ void loop()
     digitalWrite(relayPin, HIGH); // Motor ON
     digitalWrite(buzzer, HIGH);   // Buzzer ON
 
-    sendSMS();
+    if (!alertSent)
+    {
+      sendSMS();
+      alertSent = true;
+    }
 
     delay(5000);
   }
@@ -63,6 +69,7 @@ void loop()
 
     digitalWrite(relayPin, LOW);  // Motor OFF
     digitalWrite(buzzer, LOW);    // Buzzer OFF
+    alertSent = false;
   }
 
   delay(1000);
@@ -74,7 +81,9 @@ void sendSMS()
   gsm.println("AT+CMGF=1");
   delay(1000);
 
-  gsm.println("AT+CMGS=\"+91XXXXXXXXXX\""); // Replace with phone number
+  gsm.print("AT+CMGS=\"");
+  gsm.print(alertPhone);
+  gsm.println("\"");
   delay(1000);
 
   gsm.println("Alert! Drainage blockage detected.");
