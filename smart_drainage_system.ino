@@ -11,10 +11,10 @@ SoftwareSerial gsm(2, 3); // RX, TX
 const int waterSensor = A0;
 const int relayPin = 4;
 const int buzzer = 5;
+const int blockageThreshold = 300; // Analog sensor threshold for high-water/blockage detection
 const char* alertPhone = "+91XXXXXXXXXX"; // Replace with phone number
 
 int waterValue = 0;
-int threshold = 300; // Analog sensor threshold for high-water/blockage detection
 bool alertSent = false;
 
 void setup()
@@ -46,10 +46,10 @@ void loop()
   lcd.print("   ");
 
   // Blockage / High Water Detection
-  if (waterValue > threshold)
+  if (waterValue > blockageThreshold)
   {
     lcd.setCursor(0, 1);
-    lcd.print("BLOCKAGE DET");
+    lcd.print("BLOCKAGE ALERT ");
 
     digitalWrite(relayPin, HIGH); // Motor ON
     digitalWrite(buzzer, HIGH);   // Buzzer ON
